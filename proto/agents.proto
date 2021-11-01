@@ -1,0 +1,163 @@
+syntax = "proto3";
+
+package sphinx.v1;
+
+option go_package = "github.com/cyvadra/sphinx-sign/server";
+
+import "google/api/annotations.proto";
+
+// 离线签名服务
+service Sign {
+  // 创建账户
+  rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {}
+  // 进行签名
+  rpc SignScript (SignScriptRequest) returns (SignScriptResponse) {}
+}
+
+// CreateAccount 参数
+message CreateAccountRequest {
+  int32 coin_id = 1;
+  string uuid = 2;
+  // 数据库内账户私钥结构：createtime_utc, salt, prikey(encrypted)
+  // prikey(encrypted) = encrypt(prikey,string(uuid+salt))
+  // 对称加密
+  // 上线后，通知用户后台管理员做好用户数据（uuid）的备份，salt由离线签名服务端随机生成；需两把密钥解锁私钥
+  // 低安全性模式中/测试环境，复制uuid为salt，以防uuid丢失
+  // 设计思路：uuid为2FA所生成的用户私钥，保存在谷歌验证器中，但服务端必须做备份，以防用户丢失谷歌验证器后进行重置
+  // 理想情况下，2FA私钥仅保存在离线签名端，全链仅传输时效性验证码；这样可以实现安全策略
+}
+
+// CreateAccount 返回
+message CreateAccountResponse {
+  int32 coin_id = 1;
+  string address = 2; // 创建的钱包地址
+  string uuid = 3; // user_id或与其绑定的唯一标识符，用于加密私钥提高安全性
+}
+
+// SignScript 参数
+message SignScriptRequest {
+  int32 coin_id = 1;
+  string transaction_id_insite = 2; // 站内交易ID，缓存去重
+  string address_from = 3; // 发送方
+  string address_to = 4; // 接收方
+  int64 amount_int = 5; // 金额整数
+  int32 amount_digits = 6; // 默认为9
+  string amount_string = 7; // 字符串格式数据，便于确认
+}
+
+// SignScript 返回
+message SignScriptResponse {
+  int32 coin_id = 1;
+  string transaction_id_insite = 2; // 站内交易ID，缓存去重
+  string address_from = 3; // 发送方
+  string address_to = 4; // 接收方
+  int64 amount_int = 5; // 金额整数
+  int32 amount_digits = 6; // 默认为9
+  string amount_string = 7; // 字符串格式数据，便于确认
+  string script_json = 8; // 可用于广播的交易script对象
+}
+
+
+// 钱包代理插件
+service Plugin {
+  // 获取预签名信息
+  rpc GetSignInfo (GetSignInfoRequest) returns (SignInfo) {}
+  // 余额查询
+  rpc GetBalance (GetBalanceRequest) returns (AccountBalance) {}
+  // 广播交易
+  rpc BroadcastScript (BroadcastScriptRequest) returns (BroadcastScriptResponse) {}
+  // 交易状态查询
+  rpc GetTxStatus (GetTxStatusRequest) returns (GetTxStatusResponse) {}
+  // 账户交易查询
+  rpc GetTxJSON (GetTxJSONRequest) returns (AccountTxJSON) {}
+}
+
+// GetSignInfo 参数
+message GetSignInfoRequest {
+  string address = 1; // 发送方钱包地址
+}
+
+// GetSignInfo 返回
+message SignInfo {
+  string json = 1; // 需要的预签名信息
+}
+
+// GetBalance 参数
+message GetBalanceRequest {
+  int32 coin_id = 1;
+  string address = 2; // 查询的钱包地址
+  int64 timestamp_utc = 3; // 长整型时间戳
+}
+
+// GetBalance 返回
+message AccountBalance {
+  int32 coin_id = 1;
+  string address = 2; // 查询的钱包地址
+  int64 timestamp_utc = 3; // 长整型时间戳
+  int64 amount_int = 4; // 金额整数
+  int32 amount_digits = 5; // 金额*了10的^n，默认为9
+  string amount_string = 6; // 金额字符串，"123.45678901"
+}
+
+// BroadcastScript 参数
+message BroadcastScriptRequest {
+  string transaction_script = 1;
+}
+
+// BroadcastScript 返回
+message BroadcastScriptResponse {
+  string transaction_id_chain = 1;
+}
+
+// GetTxStatus 参数
+message GetTxStatusRequest {
+  string transaction_id_chain = 1;
+}
+
+// GetTxStatus 返回
+message GetTxStatusResponse {
+  int64 amount_int = 1; // 放大后的金额整数
+  int32 amount_digits = 2; // amount_int == amount*10^n
+  string amount_string = 3; // 便于验证，数据库里不存
+  string address_from = 4; // 发送方
+  string address_to = 5; // 接收方
+  string transaction_id_chain = 6; // 公链交易ID
+  int64 createtime_utc = 11; // 创建时间
+  int64 updatetime_utc = 12; // 上次更新时间
+  bool is_success = 13; // 便于调用方判断
+  bool is_failed = 14; // 不success不fail就是pending了
+  int32 num_blocks_confirmed = 15; // 已确认区块数
+}
+
+// GetTxJSONRequest 参数
+message GetTxJSONRequest {
+  // 继承钱包节点基础功能，预留
+  int32 coin_id = 1;
+  string address = 2; // 要查询的钱包地址
+  uint64 timefrom_utc = 3; // 开始时间
+  uint64 timetill_utc = 4; // 结束时间
+  int32 limit_n = 5; // 服务端限制返回条数
+}
+// GetTxJSONRequest 返回
+message AccountTxJSON {
+  string json = 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
