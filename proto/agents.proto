@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sphinx.v1;
 
-option go_package = "github.com/cyvadra/sphinx-sign/server";
+option go_package = "github.com/NpoolPlatform/sphinx-service/message/npool";
 
 import "google/api/annotations.proto";
 
@@ -43,6 +43,8 @@ message SignScriptRequest {
   int64 amount_int = 5; // 金额整数
   int32 amount_digits = 6; // 默认为9
   string amount_string = 7; // 字符串格式数据，便于确认
+  string uuid_signature = 8; // 2FA签名
+  int64 createtime_utc = 9; // 用户发起提现的时间，与2FA绑定
 }
 
 // SignScript 返回

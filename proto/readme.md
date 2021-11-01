@@ -1,0 +1,1 @@
+copied from github.com/NpoolPlatform/sphinx-service/message/npool
