@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"encoding/hex"
+	"fmt"
+
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/myxtype/filecoin-client"
@@ -44,7 +46,7 @@ func main() {
 		Params:     nil,
 	}
 
-	client := filecoin.New("https://1lB5G4SmGdSTikOo7l6vYlsktdd:b58884915362a99b4fc18c2bf8af8358@filecoin.infura.io")
+	client := filecoin.New("https://20XvTyYoZDdbCw6dEeSzWLsqTCX:f7979cc4b93b659c6beb1ac82f80233a@filecoin.infura.io")
 
 	// 最大手续费0.0001 FIL
 	//maxFee := filecoin.FromFil(decimal.NewFromFloat(0.0001))
@@ -58,7 +60,8 @@ func main() {
 	// 离线签名
 	s, err := local.WalletSignMessage(types.KTSecp256k1, ki.PrivateKey, msg)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
 	println(hex.EncodeToString(s.Signature.Data))
@@ -66,12 +69,14 @@ func main() {
 
 	// 验证签名
 	if err := local.WalletVerifyMessage(s); err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
 	mid, err := client.MpoolPush(context.Background(), s)
 	if err != nil {
-		panic(err)
+		fmt.Println(err)
+		return
 	}
 
 	println(mid.String())
