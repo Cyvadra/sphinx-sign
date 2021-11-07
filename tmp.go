@@ -34,26 +34,27 @@ func main() {
 		Type:       types.KTBLS,
 		PrivateKey: pk,
 	}
+
+	// 测试
+	fmt.Println("===============")
+	fmt.Println(crypto.SigTypeSecp256k1)
+	fmt.Println(crypto.SigTypeBLS)
 	// 由key生成并确认地址
-	addr, err := local.WalletPrivateToAddress(crypto.SigTypeBLS, pk)
+	fromAddr, err := local.WalletPrivateToAddress(crypto.SigTypeBLS, pk)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	// Debug output
 	fmt.Println("key: ", hex.EncodeToString(ki.PrivateKey))
-	// fmt.Printf("address: %v\n", addr.String())
-	// addr should be t3vciz4skae3yyfnsm54rjri3ubhbk4vklxmdvykwosnqhikehocf26rfiegekwa743ypem4oiv3uq7wuxwcca
-	addr, err := address.NewFromString("t3vciz4skae3yyfnsm54rjri3ubhbk4vklxmdvykwosnqhikehocf26rfiegekwa743ypem4oiv3uq7wuxwcca")
-
+	fmt.Printf("address: %v\n", fromAddr.String())
+	fmt.Println("expected address: t3vciz4skae3yyfnsm54rjri3ubhbk4vklxmdvykwosnqhikehocf26rfiegekwa743ypem4oiv3uq7wuxwcca")
 	to, err := address.NewFromString(toAddr)
-
 	// 转移0.001FIL到目标地址
 	msg := &types.Message{
-		Version: 0,
-		To:      to,
-		// From:       *addr,
-		From:       addr,
+		Version:    0,
+		To:         to,
+		From:       *fromAddr,
 		Nonce:      0,
 		Value:      filecoin.FromFil(decimal.NewFromFloat(0.001)),
 		GasLimit:   0,
@@ -64,7 +65,7 @@ func main() {
 	}
 
 	// 最大手续费0.0001 FIL
-	//maxFee := filecoin.FromFil(decimal.NewFromFloat(0.0001))
+	// maxFee := filecoin.FromFil(decimal.NewFromFloat(0.0001))
 
 	// 估算GasLimit
 	//msg, err = client.GasEstimateMessageGas(context.Background(), msg, &types.MessageSendSpec{MaxFee: maxFee}, nil)
