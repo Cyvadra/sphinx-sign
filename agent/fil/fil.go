@@ -5,12 +5,12 @@ import (
 	"encoding/hex"
 	"fmt"
 
+	"github.com/cyvadra/filecoin-client"
+	"github.com/cyvadra/filecoin-client/local"
+	"github.com/cyvadra/filecoin-client/types"
 	"github.com/filecoin-project/go-address"
 	"github.com/filecoin-project/go-state-types/abi"
 	"github.com/filecoin-project/go-state-types/crypto"
-	"github.com/myxtype/filecoin-client"
-	"github.com/myxtype/filecoin-client/local"
-	"github.com/myxtype/filecoin-client/types"
 	"github.com/shopspring/decimal"
 )
 

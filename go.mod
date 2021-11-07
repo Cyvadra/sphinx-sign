@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/filecoin-project/go-address v0.0.6
 	github.com/filecoin-project/go-state-types v0.1.1
-	github.com/myxtype/filecoin-client v0.3.2
+	github.com/cyvadra/filecoin-client v0.3.2
 	github.com/shopspring/decimal v1.3.1
 	google.golang.org/genproto v0.0.0-20211029142109-e255c875f7c7
 	google.golang.org/grpc v1.41.0
