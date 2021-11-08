@@ -1,10 +1,5 @@
 package model
 
-import (
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-)
-
 // 这块需要重构的，要用S3存储
 type KeyStore struct {
 	ID            uint64 `gorm:"primaryKey"`
