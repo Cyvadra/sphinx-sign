@@ -1,12 +1,11 @@
 package fil
 
 import (
-	"math/big"
 	"testing"
 
 	"github.com/cyvadra/filecoin-client/local"
 	"github.com/cyvadra/filecoin-client/types"
-	"github.com/filecoin-project/go-address"
+	"github.com/filecoin-project/go-state-types/big"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,8 +15,8 @@ func TestSignScript(t *testing.T) {
 	assert.Nil(t, err)
 	msg := &types.Message{
 		Version:    0,
-		To:         addr,
-		From:       addr,
+		To:         *addr,
+		From:       *addr,
 		Nonce:      0,
 		Value:      big.Int{123456789},
 		GasLimit:   0,
